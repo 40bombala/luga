@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Authors>r3core</Authors>
+        <Company>40bombala</Company>
+        <Description>A Generative AI Agent Management framework for .NET.</Description>
+        <PackageTags>GPT,ChatGPT,AI Agents,AI,GPT-4</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Betalgo.OpenAI.GPT3" Version="6.8.3" />
+    </ItemGroup>
+
+</Project>

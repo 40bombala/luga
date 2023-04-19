@@ -1,0 +1,42 @@
+name: CI Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Use GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.11
+        with:
+          versionSpec: '5.x'
+      - name: Get GitVersion variables
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v0.9.11
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release /p:Version=${{ steps.gitversion.outputs.AssemblySemFileVer }}
+
+      - name: Test
+        run: dotnet test --no-build --configuration Release /p:Version=${{ steps.gitversion.outputs.AssemblySemFileVer }}
+
+      - name: Publish NuGet package
+        run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ steps.gitversion.outputs.AssemblySemFileVer }}
+
+      - name: Push NuGet package to nuget.org
+        run: dotnet nuget push nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
