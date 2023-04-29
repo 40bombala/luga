@@ -25,7 +25,7 @@ Your main goal is to deliver efficient and effective support to the customers of
     {
         _chatMessages.Add(ChatMessage.FromUser(message));
 
-        ChatMessage agentResponse = await GetResponse(_chatMessages).ConfigureAwait(false);;
+        ChatMessage agentResponse = await GetResponse(_chatMessages).ConfigureAwait(false);
 
         _chatMessages.Add(agentResponse);
 

@@ -23,7 +23,7 @@ Remember, your main goal is to accurately assess the sentiment of user messages 
 
     public async Task<float> Ask(string message)
     {
-        string response = await GetResponse(message).ConfigureAwait(false);;
+        string response = await GetResponse(message).ConfigureAwait(false);
 
         return float.Parse(response);
     }

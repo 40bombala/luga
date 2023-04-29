@@ -44,22 +44,22 @@ Your main goal is to provide efficient and effective support to FortyBank custom
     {
         _chatMessages.Add(ChatMessage.FromUser(message));
 
-        ChatMessage agentResponse = await GetResponse(_chatMessages).ConfigureAwait(false);;
+        ChatMessage agentResponse = await GetResponse(_chatMessages).ConfigureAwait(false);
 
         do
         {
             _chatMessages.Add(agentResponse);
 
-            string knowledgeAgentResponse = await _knowledgeOracleAgent.Ask(agentResponse.Content).ConfigureAwait(false);;
+            string knowledgeAgentResponse = await _knowledgeOracleAgent.Ask(agentResponse.Content).ConfigureAwait(false);
 
             _chatMessages.Add(new ChatMessage(role: "user", knowledgeAgentResponse));
 
-            agentResponse = await GetResponse(_chatMessages).ConfigureAwait(false);;
+            agentResponse = await GetResponse(_chatMessages).ConfigureAwait(false);
         }
         while (!agentResponse.Content.Contains("[Finalized]"));
 
         _chatMessages.Add(agentResponse);
-        await WriteMessageLogToDisk().ConfigureAwait(false);;
+        await WriteMessageLogToDisk().ConfigureAwait(false);
 
         return agentResponse.Content.Replace(oldValue: "[Finalized]", string.Empty).TrimStart();
     }
@@ -70,6 +70,6 @@ Your main goal is to provide efficient and effective support to FortyBank custom
             Environment.NewLine,
             _chatMessages.Select(message => $"{message.Role}: {message.Content}\n"));
 
-        await File.WriteAllTextAsync(path: "message_log.txt", log).ConfigureAwait(false);;
+        await File.WriteAllTextAsync(path: "message_log.txt", log).ConfigureAwait(false);
     }
 }

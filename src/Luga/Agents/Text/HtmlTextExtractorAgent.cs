@@ -22,6 +22,6 @@ Your main goal is to accurately and efficiently extract the text content from HT
 
     public async Task<string> Ask(string message)
     {
-        return await GetResponse(message).ConfigureAwait(false);;
+        return await GetResponse(message).ConfigureAwait(false);
     }
 }
