@@ -2,6 +2,8 @@
 
 using Agents.Chat;
 using Agents.Chat.Interfaces;
+using Agents.General;
+using Agents.General.Interfaces;
 using Agents.Text;
 using Agents.Text.Interfaces;
 using LanguageModels;
@@ -12,10 +14,9 @@ using OpenAI.GPT3.Extensions;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection ConfigureLugaProviders(
+    public static IServiceCollection ConfigureLuga(
         this IServiceCollection services,
-        Provider provider,
-        IConfiguration configuration)
+        Provider provider)
     {
         switch (provider)
         {
@@ -24,6 +25,8 @@ public static class DependencyInjection
 
                 break;
             case Provider.AzureOpenAi:
+                var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+
                 services.AddOpenAIService(
                     options =>
                     {
@@ -36,19 +39,21 @@ public static class DependencyInjection
 
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(provider), provider, message: "OpenAI Provider not supported");
+                throw new ArgumentOutOfRangeException(
+                    nameof(provider),
+                    provider,
+                    message: "OpenAI Provider not supported");
         }
+
+        services.AddScoped<IAgentBuilder, AgentBuilder>();
 
         return services;
     }
 
-    public static IServiceCollection ConfigureLugaServices(this IServiceCollection services)
+    public static IServiceCollection AddLugaAgents(this IServiceCollection services)
     {
-        services.AddScoped<IIntentClassifierAgent, IntentClassifierAgent>();
         services.AddScoped<IHtmlTextExtractorAgent, HtmlTextExtractorAgent>();
-        services.AddScoped<IKnowledgeOracleAgent, KnowledgeOracleAgent>();
         services.AddScoped<ISentimentAnalyserAgent, SentimentAnalyserAgent>();
-        services.AddScoped<ISupportAgent, SupportAgent>();
 
         return services;
     }

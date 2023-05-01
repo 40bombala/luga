@@ -7,32 +7,40 @@ using OpenAI.GPT3.ObjectModels.ResponseModels;
 
 public abstract class AgentBase
 {
-    private readonly string _context;
     private readonly IOpenAIService _openAiService;
+
+    protected AgentBase(IOpenAIService openAiService)
+    {
+        _openAiService = openAiService;
+    }
 
     protected AgentBase(IOpenAIService openAiService, string context)
     {
         _openAiService = openAiService;
-        _context = context;
+        Context = context;
     }
 
-    protected float? Temperature { get; init; }
+    protected internal float? Temperature { get; set; }
 
-    protected string Model { get; init; } = Models.ChatGpt3_5Turbo;
+    protected internal string Model { get; set; } = Models.ChatGpt3_5Turbo;
+
+    protected internal string Context { get; set; } = default!;
 
     protected async Task<string> GetResponse(string message)
     {
-        ChatCompletionCreateResponse completionResult = await _openAiService.ChatCompletion.CreateCompletion(
-            new ChatCompletionCreateRequest
+        ChatCompletionCreateRequest request = new()
+        {
+            Messages = new List<ChatMessage>
             {
-                Messages = new List<ChatMessage>
-                {
-                    ChatMessage.FromSystem(_context),
-                    ChatMessage.FromUser(message)
-                },
-                Model = Model,
-                Temperature = Temperature
-            }).ConfigureAwait(false);;
+                ChatMessage.FromSystem(Context),
+                ChatMessage.FromUser(message)
+            },
+            Model = Model,
+            Temperature = Temperature
+        };
+
+        ChatCompletionCreateResponse completionResult =
+            await _openAiService.ChatCompletion.CreateCompletion(request).ConfigureAwait(false);
 
         return completionResult switch
         {
@@ -43,18 +51,22 @@ public abstract class AgentBase
 
     protected async Task<ChatMessage> GetResponse(IEnumerable<ChatMessage> messages)
     {
-        var chatMessages = new List<ChatMessage>
+        List<ChatMessage> chatMessages = new()
         {
-            ChatMessage.FromSystem(_context)
+            ChatMessage.FromSystem(Context)
         };
 
-        ChatCompletionCreateResponse completionResult = await _openAiService.ChatCompletion.CreateCompletion(
-            new ChatCompletionCreateRequest
-            {
-                Messages = chatMessages.Concat(messages).ToList(),
-                Model = Model,
-                Temperature = Temperature
-            }).ConfigureAwait(false);;
+        ChatCompletionCreateRequest request = new()
+        {
+            Messages = chatMessages
+                      .Concat(messages)
+                      .ToList(),
+            Model = Model,
+            Temperature = Temperature
+        };
+
+        ChatCompletionCreateResponse completionResult =
+            await _openAiService.ChatCompletion.CreateCompletion(request).ConfigureAwait(false);
 
         return completionResult switch
         {

@@ -6,7 +6,7 @@ using Shared;
 
 public class HtmlTextExtractorAgent : AgentBase, IHtmlTextExtractorAgent
 {
-    private const string Context = @"
+    private new const string Context = @"
 You are a GPT-based Text Extractor model specifically designed for extracting text from HTML payloads.
 Your primary function is to analyze the provided HTML content and respond with the clean, plain text extracted from it, while removing all HTML tags, scripts, and any other non-textual elements.
 
@@ -22,6 +22,6 @@ Your main goal is to accurately and efficiently extract the text content from HT
 
     public async Task<string> Ask(string message)
     {
-        return await GetResponse(message).ConfigureAwait(false);;
+        return await GetResponse(message).ConfigureAwait(false);
     }
 }

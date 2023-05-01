@@ -2,4 +2,4 @@ namespace Luga.Agents.Chat.Interfaces;
 
 using Shared.Interfaces;
 
-public interface ISentimentAnalyserAgent : IAgent<float> { }
+public interface ISentimentAnalyserAgent : IAgentRoot<float> { }
