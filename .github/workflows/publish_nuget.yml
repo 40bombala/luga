@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        
+      - name: Unshallow repository
+        run: git fetch --prune --unshallow
 
       - name: Use GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.11
