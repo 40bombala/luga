@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-        
+
       - name: Unshallow repository
         run: git fetch --prune --unshallow
 
@@ -39,7 +39,7 @@ jobs:
         run: dotnet test --no-build --configuration Release /p:Version=${{ steps.gitversion.outputs.AssemblySemFileVer }}
 
       - name: Publish NuGet package
-        run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ steps.gitversion.outputs.AssemblySemFileVer }}
+        run: dotnet pack --configuration Release --no-build --output nupkgs /p:Version=${{ steps.gitversion.outputs.NuGetVersionV2 }}
 
       - name: Push NuGet package to nuget.org
         run: dotnet nuget push nupkgs/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
