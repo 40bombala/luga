@@ -2,6 +2,8 @@
 
 A Generative AI Agent Management framework for .NET.
 
+Github: [luga](https://github.com/40bombala/luga)
+
 ## Installation
 
 ### NuGet
@@ -41,7 +43,10 @@ dotnet add package Luga
 Register the AI agents using the `ConfigureLugaProviders` extension method:
 
 ```csharp
-services.ConfigureLuga(Provider.OpenAi, configuration);
+services.ConfigureLuga(Provider.OpenAi);
+
+// To use pre-built agents
+services.AddLugaAgents()
 ```
 
 ## Inject Services
@@ -53,9 +58,8 @@ public class MyClass
 {
     private readonly IHtmlTextExtractorAgent _htmlTextExtractorAgent;
 
-    public MyClass(IIntentClassifierAgent intentClassifierAgent, IHtmlTextExtractorAgent htmlTextExtractorAgent)
+    public MyClass(IHtmlTextExtractorAgent htmlTextExtractorAgent)
     {
-        _intentClassifierAgent = intentClassifierAgent;
         _htmlTextExtractorAgent = htmlTextExtractorAgent;
     }
 } 
@@ -98,6 +102,5 @@ var response = await agent.Ask(
 ```
 
 ## References
-
 
 This project utilizes [Betalgo.OpenAI](https://github.com/betalgo/openai) to communicate with the OpenAI API.
