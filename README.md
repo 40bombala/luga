@@ -24,6 +24,7 @@ dotnet add package Luga
 ``` 
 
 ### For Azure OpenAI
+
 ```json
 {
   "OpenAIServiceOptions": {
@@ -40,7 +41,7 @@ dotnet add package Luga
 Register the AI agents using the `ConfigureLugaProviders` extension method:
 
 ```csharp
-services.ConfigureLugaProviders(Provider.OpenAi, configuration);
+services.ConfigureLuga(Provider.OpenAi, configuration);
 ```
 
 ## Inject Services
@@ -50,16 +51,13 @@ Inject the required services into your classes:
 ```csharp
 public class MyClass
 {
-    private readonly IIntentClassifierAgent _intentClassifierAgent;
-    private readonly ITextExtractorAgent _htmlTextExtractorAgent;
+    private readonly IHtmlTextExtractorAgent _htmlTextExtractorAgent;
 
     public MyClass(IIntentClassifierAgent intentClassifierAgent, IHtmlTextExtractorAgent htmlTextExtractorAgent)
     {
         _intentClassifierAgent = intentClassifierAgent;
         _htmlTextExtractorAgent = htmlTextExtractorAgent;
     }
-
-    // Your methods here
 } 
 ```
 
@@ -68,6 +66,38 @@ public class MyClass
 Use the AI agents to perform tasks:
 
 ```csharp
-var intentResult = await _intentClassifierAgent.Ask("What is the weather like today?");
 var extractedText = await _htmlTextExtractorAgent.Ask("<html><body><p>Hello, World!</p></body></html>");
 ``` 
+
+## Build Agents Dynamically
+
+Use the `IAgentBuilder` builder to build agents dynamically:
+
+```csharp
+var agentBuilder = host.Services.GetRequiredService<IAgentBuilder>();
+
+Agent agent = agentBuilder!
+             .WithContext(
+                  """
+                  You are a GPT-based Language Detection Agent, specifically designed to identify the language of a given text.
+                  Your primary function is to analyze the text and return the language it is written in, using ISO 639-1 language codes (e.g., 'en' for English, 'es' for Spanish, 'fr' for French).
+
+                  When you receive a text input, carefully examine its content and determine the language with high accuracy.
+                  Use your extensive knowledge of various languages and linguistic patterns to identify the correct language code.
+                  Remember, your main goal is to provide accurate and efficient language detection for any text input you receive.
+                  """)
+             .WithModel(Models.Gpt4)
+             .Build();
+
+var response = await agent.Ask(
+    message: "Bonjour, comment ça va?",
+    output => new
+    {
+        Language = output
+    });
+```
+
+## References
+
+
+This project utilizes [Betalgo.OpenAI](https://github.com/betalgo/openai) to communicate with the OpenAI API.

@@ -16,17 +16,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection ConfigureLuga(
         this IServiceCollection services,
-        Provider provider,
-        IConfiguration configuration = null)
+        Provider provider)
     {
-        if (provider == Provider.AzureOpenAi)
-        {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-        }
-
         switch (provider)
         {
             case Provider.OpenAi:
@@ -34,6 +25,8 @@ public static class DependencyInjection
 
                 break;
             case Provider.AzureOpenAi:
+                var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+
                 services.AddOpenAIService(
                     options =>
                     {
