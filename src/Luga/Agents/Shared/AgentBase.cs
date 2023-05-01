@@ -22,25 +22,25 @@ public abstract class AgentBase
 
     protected internal float? Temperature { get; set; }
 
-    protected string Model { get; init; } = Models.ChatGpt3_5Turbo;
+    protected internal string Model { get; set; } = Models.ChatGpt3_5Turbo;
 
-    protected internal string Context { get; set; }
+    protected internal string Context { get; set; } = default!;
 
     protected async Task<string> GetResponse(string message)
     {
-        ChatCompletionCreateResponse completionResult = await _openAiService.ChatCompletion.CreateCompletion(
-                                                                                 new ChatCompletionCreateRequest
-                                                                                 {
-                                                                                     Messages = new List<ChatMessage>
-                                                                                     {
-                                                                                         ChatMessage.FromSystem(
-                                                                                             Context),
-                                                                                         ChatMessage.FromUser(message)
-                                                                                     },
-                                                                                     Model = Model,
-                                                                                     Temperature = Temperature
-                                                                                 })
-                                                                            .ConfigureAwait(false);
+        ChatCompletionCreateRequest request = new()
+        {
+            Messages = new List<ChatMessage>
+            {
+                ChatMessage.FromSystem(Context),
+                ChatMessage.FromUser(message)
+            },
+            Model = Model,
+            Temperature = Temperature
+        };
+
+        ChatCompletionCreateResponse completionResult =
+            await _openAiService.ChatCompletion.CreateCompletion(request).ConfigureAwait(false);
 
         return completionResult switch
         {
@@ -51,21 +51,22 @@ public abstract class AgentBase
 
     protected async Task<ChatMessage> GetResponse(IEnumerable<ChatMessage> messages)
     {
-        var chatMessages = new List<ChatMessage>
+        List<ChatMessage> chatMessages = new()
         {
             ChatMessage.FromSystem(Context)
         };
 
-        ChatCompletionCreateResponse completionResult = await _openAiService.ChatCompletion.CreateCompletion(
-                                                                                 new ChatCompletionCreateRequest
-                                                                                 {
-                                                                                     Messages = chatMessages
-                                                                                        .Concat(messages)
-                                                                                        .ToList(),
-                                                                                     Model = Model,
-                                                                                     Temperature = Temperature
-                                                                                 })
-                                                                            .ConfigureAwait(false);
+        ChatCompletionCreateRequest request = new()
+        {
+            Messages = chatMessages
+                      .Concat(messages)
+                      .ToList(),
+            Model = Model,
+            Temperature = Temperature
+        };
+
+        ChatCompletionCreateResponse completionResult =
+            await _openAiService.ChatCompletion.CreateCompletion(request).ConfigureAwait(false);
 
         return completionResult switch
         {

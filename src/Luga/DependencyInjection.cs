@@ -2,6 +2,8 @@
 
 using Agents.Chat;
 using Agents.Chat.Interfaces;
+using Agents.General;
+using Agents.General.Interfaces;
 using Agents.Text;
 using Agents.Text.Interfaces;
 using LanguageModels;
@@ -12,11 +14,19 @@ using OpenAI.GPT3.Extensions;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection ConfigureLugaProviders(
+    public static IServiceCollection ConfigureLuga(
         this IServiceCollection services,
         Provider provider,
-        IConfiguration configuration)
+        IConfiguration configuration = null)
     {
+        if (provider == Provider.AzureOpenAi)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+        }
+
         switch (provider)
         {
             case Provider.OpenAi:
@@ -36,19 +46,21 @@ public static class DependencyInjection
 
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(provider), provider, message: "OpenAI Provider not supported");
+                throw new ArgumentOutOfRangeException(
+                    nameof(provider),
+                    provider,
+                    message: "OpenAI Provider not supported");
         }
+
+        services.AddScoped<IAgentBuilder, AgentBuilder>();
 
         return services;
     }
 
-    public static IServiceCollection ConfigureLugaServices(this IServiceCollection services)
+    public static IServiceCollection AddLugaAgents(this IServiceCollection services)
     {
-        services.AddScoped<IIntentClassifierAgent, IntentClassifierAgent>();
         services.AddScoped<IHtmlTextExtractorAgent, HtmlTextExtractorAgent>();
-        services.AddScoped<IKnowledgeOracleAgent, KnowledgeOracleAgent>();
         services.AddScoped<ISentimentAnalyserAgent, SentimentAnalyserAgent>();
-        services.AddScoped<ISupportAgent, SupportAgent>();
 
         return services;
     }

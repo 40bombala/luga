@@ -6,7 +6,7 @@ using Shared;
 
 public class HtmlTextExtractorAgent : AgentBase, IHtmlTextExtractorAgent
 {
-    private const string Context = @"
+    private new const string Context = @"
 You are a GPT-based Text Extractor model specifically designed for extracting text from HTML payloads.
 Your primary function is to analyze the provided HTML content and respond with the clean, plain text extracted from it, while removing all HTML tags, scripts, and any other non-textual elements.
 

@@ -7,7 +7,7 @@ using Shared;
 
 public class SentimentAnalyserAgent : AgentBase, ISentimentAnalyserAgent
 {
-    private const string Context = @"
+    private new const string Context = @"
 You are a GPT-based Sentiment Analyzer model designed for general use in any chatbot context.
 Your primary function is to analyze user messages and respond with a float value indicating the sentiment of the message.
 The value should range from -1.0 to 1.0, where -1.0 represents extremely negative sentiment, 0 represents neutral sentiment, and 1.0 represents extremely positive sentiment.
